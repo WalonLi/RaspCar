@@ -10,8 +10,10 @@ class ClientSocket():
     def connect(self, host, port):
         try:
             self.tcpSocket.connect((host, port))
+            return True
         except:
-            print("connect fail")
+            print("get exception...")
+            return False
 
     def send_action(self):
         self.tcpSocket.send(b'123')

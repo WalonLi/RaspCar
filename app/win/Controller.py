@@ -6,6 +6,10 @@ from ClientSocket import ClientSocket
 from PyQt5.uic import loadUi
 from PyQt5.QtGui  import *
 from PyQt5.QtCore import *
+
+
+import time, threading
+
 '''
 class Enviroment:
     app = QApplication(sys.argv)
@@ -17,6 +21,31 @@ class Enviroment:
             self.move((rect.width()-self.width())/2, (rect.height()-self.height())/2)
             self.size()
 '''
+
+class TriggerObj(QObject):
+    trigger = pyqtSignal()
+
+
+class ConnectThread(threading.Thread):
+    flag = False
+
+    def run(self):
+        #ConnectThread.connect_mutex.lock()
+        print("connect Pi...", login._ipText.toPlainText())
+        if contol.bindSocket(login._ipText.toPlainText(), 50007):
+            print("connect success...")
+            obj = TriggerObj()
+            obj.trigger.connect(login.changeView)
+            obj.trigger.emit()
+        else:
+            print("connect fail...")
+
+        ConnectThread.flag = False
+
+    #def start(self, args):
+    #    ConnectThread.args = args
+    #    super().start()
+
 
 class LoginWindow(QWidget):
     def __init__(self):
@@ -40,7 +69,6 @@ class LoginWindow(QWidget):
         self.setFixedSize(400, 200)
         self.setLayout(self._layout)
 
-
     def show(self):
         if app.desktop().screenCount() <= 1 :
             self.move((app.desktop().width()-self.width())/2, (app.desktop().height()-self.height())/2)
@@ -51,11 +79,14 @@ class LoginWindow(QWidget):
         super().show()
 
     def _connectPi(self):
-        print("connect Pi...", self._ipText.toPlainText())
-        contol.bindSocket(self._ipText.toPlainText(), 50007)
-        self.close()
-        contol.show()
+        if not ConnectThread.flag:
+            ConnectThread.flag = True
+            ConnectThread().start()
 
+    @pyqtSlot()
+    def changeView(self):
+        login.close()
+        contol.show()
 
 
 
@@ -82,11 +113,12 @@ class ControlWindow(QWidget):
         self._sock.close()
 
     def bindSocket(self, host, port):
-        self._sock.connect(host, port)
+        return self._sock.connect(host, port)
 
     def send_event(self):
         while self._sock.send_action() == False:
             print("reconnect...")
+
 #def init_login_layout() :
 #    print("23")
 #    print("23")
