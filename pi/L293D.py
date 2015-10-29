@@ -4,18 +4,29 @@
 import RPi.GPIO as GPIO
 import time
 
+
+
+
 def latch_(d, value):
-    GPIO.output(d["DIR_UP"], GPIO.LOW)
+    #GPIO.output(d["DIR_UP"], GPIO.LOW)
     GPIO.output(d["DIR_LATCH"], GPIO.LOW)
-  
+
+
     for i in range(8):
         GPIO.output(d["DIR_CLK"], GPIO.LOW)
+        if value & 0x1:
+            GPIO.output(d["DIR_UP"], GPIO.HIGH)
+        else:
+            GPIO.output(d["DIR_UP"], GPIO.LOW)
+        value >>= 1
+        """
         if i % 2 == 1 and value == 1:
             GPIO.output(d["DIR_UP"], GPIO.HIGH)
             print(d["DIR_UP"], i)
         else:
             GPIO.output(d["DIR_UP"], GPIO.LOW)
             print("LOW", i)
+        """
         GPIO.output(d["DIR_CLK"], GPIO.HIGH)
 
     GPIO.output(d["DIR_LATCH"], GPIO.HIGH)
@@ -47,22 +58,39 @@ GPIO.output(GpIO_Dict["PWM4"], GPIO.HIGH)
 #p1.ChangeDutyCycle(50)
 
 
-latch_(GpIO_Dict, 0)
-time.sleep(3)
+
+#latch_(GpIO_Dict, 0)
+#time.sleep(3)
+
+#GPIO.output(d["DIR_CLK"], GPIO.LOW)
+#GPIO.output(GpIO_Dict["DIR_EN"], GPIO.HIGH)
 GPIO.output(GpIO_Dict["DIR_EN"], GPIO.LOW)
-latch_(GpIO_Dict, 1)
-#for i in range(8):
+
+#reset
+latch_(GpIO_Dict, 0)
+
+"""
+#define MOTOR1_A 2
+#define MOTOR1_B 3
+#define MOTOR2_A 1
+#define MOTOR2_B 4
+#define MOTOR4_A 0
+#define MOTOR4_B 6
+#define MOTOR3_A 5
+#define MOTOR3_B 7
+"""
+#0 0 1 0 1 0 1 1
+latch_(GpIO_Dict, 0x2b)
 
 #GPIO.output(GpIO_Dict["PWM1"], GPIO.HIGH)
-time.sleep(15)
+time.sleep(2)
 
 GPIO.output(GpIO_Dict["PWM1"], GPIO.LOW)
 GPIO.output(GpIO_Dict["PWM2"], GPIO.LOW)
 GPIO.output(GpIO_Dict["PWM3"], GPIO.LOW)
 GPIO.output(GpIO_Dict["PWM4"], GPIO.LOW)
 
-time.sleep(3)
+
+time.sleep(1)
 GPIO.cleanup()
-
-
 
