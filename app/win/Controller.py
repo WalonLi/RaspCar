@@ -1,7 +1,27 @@
+#!/usr/bin/python3
+
+"""
+GNU GENERAL PUBLIC LICENSE
+Copyright (C) 2015  WalonLi
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import sys
 
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTextEdit, QHBoxLayout, QGridLayout
-from PyQt5.QtWidgets import QOpenGLWidget, QAction
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTextEdit, QHBoxLayout
+from PyQt5.QtWidgets import QOpenGLWidget, QAction, QShortcut, QGridLayout
 import socket
 from ClientSocket import ClientSocket
 from PyQt5.uic import loadUi
@@ -51,10 +71,6 @@ class ConnectThread(threading.Thread):
             print("connect fail...")
 
         ConnectThread.flag = False
-
-    #def start(self, args):
-    #    ConnectThread.args = args
-    #    super().start()
 
 
 class LoginWindow(QWidget):
@@ -133,6 +149,7 @@ class ControlWindow(QWidget):
             btn_grp[i].move(p)
             btn_grp[i].pressed.connect(press_event[i])
             btn_grp[i].released.connect(release_event[i])
+            btn_grp[i].setFocusPolicy(Qt.NoFocus)
             if p.x() >= 740:
                 p.setX(620)
                 p.setY(p.y()+60)
@@ -140,9 +157,12 @@ class ControlWindow(QWidget):
                 p.setX(p.x()+60)
 
         #act = QAction("Action", self._up_left, )
-        self._up_left.setShortcut(Qt.Key_Left)
-        #self._up_left.shor
+        #self._up_left.setShortcut(Qt.Key_Up)
 
+        #self._up_left.shortcut = QShortcut(QKeySequence("Ctrl+Q"), self)
+        #self._up_left.shortcut.activated.connect(self.up_left_press_event)
+
+        #self._up_left.setAutoRepeat(False)
         #self._up_left.addAction()
         #self._up.clicked.connect(self.send_event)
 
@@ -151,7 +171,6 @@ class ControlWindow(QWidget):
         self._graphic.move(QPoint(10, 10))
 
 
-        #self._layout.set
         #self._layout = QGridLayout(self)
         #self._layout.addWidget(self._up)
         #self._layout.addWidget(self._down)
@@ -169,63 +188,111 @@ class ControlWindow(QWidget):
     def bindSocket(self, host, port):
         return self._sock.connect(host, port)
 
-    def send_event(self):
-        while self._sock.send_action() == False:
+    def send_event(self, data):
+        while self._sock.send_action(data) == False:
             print("reconnect...")
 
     """
     def event(self, e):
-        #if type(e) == QKeyEvent and not e.isAutoRepeat():
-        #    if e.key() == Qt.Key_Up:
-        #        print("123")
-        #        return True
+        if type(e) == QKeyEvent and not e.isAutoRepeat():
+            if e.key() == Qt.Key_Up:
+                print("123")
+                return True
 
         #print(type(e))
         return QWidget.event(self, e)
     """
 
+    def keyPressEvent(self, e):
+        if not e.isAutoRepeat():
+            obj = None
+            if e.key() == Qt.Key_Up:
+                obj = self._up
+            elif e.key() == Qt.Key_Left:
+                obj = self._mid_left
+            elif e.key() == Qt.Key_Right:
+                obj = self._mid_right
+            elif e.key() == Qt.Key_Down:
+                obj = self._down
+            if obj != None:
+                obj.setDown(True)
+                obj.pressed.emit()
+            else:
+                QWidget.keyPressEvent(self, e)
+        else:
+            QWidget.keyPressEvent(self, e)
+
+    def keyReleaseEvent(self, e):
+        if not e.isAutoRepeat():
+            obj = None
+            if e.key() == Qt.Key_Up:
+                obj = self._up
+            elif e.key() == Qt.Key_Left:
+                obj = self._mid_left
+            elif e.key() == Qt.Key_Right:
+                obj = self._mid_right
+            elif e.key() == Qt.Key_Down:
+                obj = self._down
+            if obj != None:
+                obj.setDown(False)
+                obj.released.emit()
+            else:
+                QWidget.keyPressEvent(self, e)
+        else:
+            QWidget.keyReleaseEvent(self, e)
+
     #press function
     def up_left_press_event(self):
-        print("up_left press")
         pass
     def up_press_event(self):
+        print("up press")
+        self.send_event("arrow-key:up action:press")
         pass
     def up_right_press_event(self):
         pass
     def mid_left_press_event(self):
+        print("mid-left press")
+        self.send_event("arrow-key:mid-left action:press")
         pass
     def mid_press_event(self):
-        print("mid press")
         pass
     def mid_right_press_event(self):
+        print("mid-right press")
+        self.send_event("arrow-key:mid-right action:press")
         pass
     def down_left_press_event(self):
         pass
     def down_press_event(self):
         print("down press")
+        self.send_event("arrow-key:down action:press")
         pass
     def down_right_press_event(self):
         pass
 
     #release function
     def up_left_release_event(self):
-        print("up_left release")
         pass
     def up_release_event(self):
+        print("up release")
+        self.send_event("arrow-key:up action:release")
         pass
     def up_right_release_event(self):
         pass
     def mid_left_release_event(self):
+        print("mid-left release")
+        self.send_event("arrow-key:mid-left action:release")
         pass
     def mid_release_event(self):
-        print("mid release")
         pass
     def mid_right_release_event(self):
+        print("mid-right release")
+        self.send_event("arrow-key:mid-right action:release")
         pass
     def down_left_release_event(self):
         pass
     def down_release_event(self):
         print("down release")
+        self.send_event("arrow-key:down action:release")
         pass
     def down_right_release_event(self):
         pass
@@ -239,9 +306,9 @@ if __name__ == '__main__' :
     login = LoginWindow()
     control = ControlWindow()
 
-    #login.show()
-    control.show()
-    # a = QPushButton("Connect")
+    login.show()
+    #control.show()
+
     # login.close()
     # app.exec_()
 
