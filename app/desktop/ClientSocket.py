@@ -33,14 +33,21 @@ class ClientSocket():
             print("get exception...")
             return False
 
-    def send_action(self, data):
-        self.tcpSocket.send(bytes(data, "utf8"))
-        rev_data = self.recv()
-        print(rev_data)
-        return True
+    def sendAction(self, data):
+        try:
+            self.tcpSocket.send(bytes(data, "utf8"))
+            rev_data = self.recv()
+            print(rev_data)
+            return True
+        except:
+            print("send action fail")
+            return False
 
     def recv(self):
-        return self.tcpSocket.recv(1024)
+        try:
+            return self.tcpSocket.recv(1024)
+        except:
+            return "Error recv"
 
     def close(self):
         self.tcpSocket.close()

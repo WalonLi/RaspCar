@@ -64,51 +64,51 @@ class Motor():
         GPIO.output(self._gpio_map["PWM2"], GPIO.LOW)
         GPIO.output(self._gpio_map["PWM3"], GPIO.LOW)
         GPIO.output(self._gpio_map["PWM4"], GPIO.LOW)
-        self._moto_latch(0)
+        self._motoLatch(0)
         GPIO.cleanup()
 
     def stop(self):
         for i in self._pwm_map:
             i.ChangeDutyCycle(0)
-        self._moto_latch(0)
+        self._motoLatch(0)
 
     def forward(self):
         for i in self._pwm_map:
             i.ChangeDutyCycle(100)
 
-        self._moto_latch(Motor.forward_byte)
+        self._motoLatch(Motor.forward_byte)
         time.sleep(5)
 
     def backward(self):
         for i in self._pwm_map:
             i.ChangeDutyCycle(100)
 
-        self._moto_latch(Motor.forward_byte ^ 0xff)
+        self._motoLatch(Motor.forward_byte ^ 0xff)
         time.sleep(5)
 
 
-    def turn_left(self):
+    def turnLeft(self):
         self._pwm_map[0].ChangeDutyCycle(0)
         self._pwm_map[1].ChangeDutyCycle(0)
         self._pwm_map[2].ChangeDutyCycle(100)
         self._pwm_map[3].ChangeDutyCycle(100)
 
-        self._moto_latch(Motor.forward_byte)
+        self._motoLatch(Motor.forward_byte)
         time.sleep(5)
 
-    def turn_right(self):
+    def turnRight(self):
         self._pwm_map[0].ChangeDutyCycle(100)
         self._pwm_map[1].ChangeDutyCycle(100)
         self._pwm_map[2].ChangeDutyCycle(0)
         self._pwm_map[3].ChangeDutyCycle(0)
 
-        self._moto_latch(Motor.forward_byte)
+        self._motoLatch(Motor.forward_byte)
         time.sleep(2)
         pass
 
 
     # inner function, don't call it directly
-    def _moto_latch(self, v):
+    def _motoLatch(self, v):
         GPIO.output(self._gpio_map["DIR_LATCH"], GPIO.LOW)
 
         for i in range(8):

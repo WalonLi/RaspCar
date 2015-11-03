@@ -16,18 +16,56 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
-import RPi.GPIO as GPIO
+import socket
 import time
-from Motor import Motor
+#from Motor import Motor
+
 
 class RaspCar():
     def __init__(self):
-        self.motor = Motor()
-        self.motor.turn_right()
+        #self.motor = Motor()
+        #self.motor.turnRight()
+
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.bind(('', 50007))
+        self._socket.listen(1)
         pass
 
+    def __del__(self):
+        self._socket.close()
+
+    def start(self):
+        while True:
+            conn, addr = self._socket.accept()
+            print("Connected by", addr)
+            while True:
+                try:
+                    # receive data
+                    data = conn.recv(1024)
+
+                    # force quit...
+                    if data == "close":
+                        return True
+
+                    self._parseData(data)
+                    #send feedback
+                    conn.send("good")
+                except:
+                    print("close socket")
+                    break
+            conn.close()
+
+    def _parseData(self, data):
+        func = data.split(" ")
+        if len(func) < 2:
+            return False
+
+        key = func[0].split(":")
+        act = func[1].split(":")
+        print(key, act)
 
 
 if __name__ == '__main__' :
     car = RaspCar()
+    car.start()
     print("hello")

@@ -122,6 +122,9 @@ class ControlWindow(QWidget):
     def __init__(self):
         super().__init__(None)
 
+        self._host = ""
+        self._port = 0
+
         self._up_left   = QPushButton("↖", self)
         self._up        = QPushButton("↑", self)
         self._up_right  = QPushButton("↗", self)
@@ -132,15 +135,16 @@ class ControlWindow(QWidget):
         self._down      = QPushButton("↓", self)
         self._down_right = QPushButton("↘", self)
 
+
         btn_grp = [self._up_left, self._up, self._up_right,
                    self._mid_left, self._mid, self._mid_right,
                    self._down_left, self._down, self._down_right]
-        press_event = [self.up_left_press_event, self.up_press_event, self.up_right_press_event,
-                       self.mid_left_press_event, self.mid_press_event, self.mid_right_press_event,
-                       self.down_left_press_event, self.down_press_event, self.down_right_press_event]
-        release_event = [self.up_left_release_event, self.up_release_event, self.up_right_release_event,
-                         self.mid_left_release_event, self.mid_release_event, self.mid_right_release_event,
-                         self.down_left_release_event, self.down_release_event, self.down_right_release_event]
+        press_event = [self.upLeftPressEvent, self.upPressEvent, self.upRightPressEvent,
+                       self.midLefPressEvent, self.midPressEvent, self.midRightRressEvent,
+                       self.downLeftPressEvent, self.downPressEvent, self.downRightPressEvent]
+        release_event = [self.upLeftReleaseEvent, self.upReleaseEvent, self.upRightReleaseEvent,
+                         self.midLeftReleaseEvent, self.midReleaseEvent, self.midRightReleaseEvent,
+                         self.downLeftReleaseEvent, self.downReleaseEvent, self.downRightReleaseEvent]
 
         # set position and connect event
         p = QPoint(620, 420) # start point
@@ -160,7 +164,7 @@ class ControlWindow(QWidget):
         #self._up_left.setShortcut(Qt.Key_Up)
 
         #self._up_left.shortcut = QShortcut(QKeySequence("Ctrl+Q"), self)
-        #self._up_left.shortcut.activated.connect(self.up_left_press_event)
+        #self._up_left.shortcut.activated.connect(self.)
 
         #self._up_left.setAutoRepeat(False)
         #self._up_left.addAction()
@@ -186,12 +190,19 @@ class ControlWindow(QWidget):
         self._sock.close()
 
     def bindSocket(self, host, port):
+        self._host = host
+        self._port = port
         return self._sock.connect(host, port)
 
-    def send_event(self, data):
-        while self._sock.send_action(data) == False:
-            print("reconnect...")
-
+    def sendEvent(self, data):
+        while self._sock.sendAction(data) == False:
+            try:
+                print("reconnect...", self._host, self._port)
+                self._sock.close()
+                self._sock = ClientSocket()
+                self.bindSocket(self._host, self._port)
+            except:
+                time.sleep(4)
     """
     def event(self, e):
         if type(e) == QKeyEvent and not e.isAutoRepeat():
@@ -242,61 +253,62 @@ class ControlWindow(QWidget):
             QWidget.keyReleaseEvent(self, e)
 
     #press function
-    def up_left_press_event(self):
+    def upLeftPressEvent(self):
         pass
-    def up_press_event(self):
+    def upPressEvent(self):
         print("up press")
-        self.send_event("arrow-key:up action:press")
+        self.sendEvent("arrow-key:up action:press")
         pass
-    def up_right_press_event(self):
+    def upRightPressEvent(self):
         pass
-    def mid_left_press_event(self):
+    def midLefPressEvent(self):
         print("mid-left press")
-        self.send_event("arrow-key:mid-left action:press")
+        self.sendEvent("arrow-key:mid-left action:press")
         pass
-    def mid_press_event(self):
+    def midPressEvent(self):
         pass
-    def mid_right_press_event(self):
+    def midRightRressEvent(self):
         print("mid-right press")
-        self.send_event("arrow-key:mid-right action:press")
+        self.sendEvent("arrow-key:mid-right action:press")
         pass
-    def down_left_press_event(self):
+    def downLeftPressEvent(self):
         pass
-    def down_press_event(self):
+    def downPressEvent(self):
         print("down press")
-        self.send_event("arrow-key:down action:press")
+        self.sendEvent("arrow-key:down action:press")
         pass
-    def down_right_press_event(self):
+    def downRightPressEvent(self):
         pass
 
     #release function
-    def up_left_release_event(self):
+    def upLeftReleaseEvent(self):
         pass
-    def up_release_event(self):
+    def upReleaseEvent(self):
         print("up release")
-        self.send_event("arrow-key:up action:release")
+        self.sendEvent("arrow-key:up action:release")
         pass
-    def up_right_release_event(self):
+    def upRightReleaseEvent(self):
         pass
-    def mid_left_release_event(self):
+    def midLeftReleaseEvent(self):
         print("mid-left release")
-        self.send_event("arrow-key:mid-left action:release")
+        self.sendEvent("arrow-key:mid-left action:release")
         pass
-    def mid_release_event(self):
+    def midReleaseEvent(self):
         pass
-    def mid_right_release_event(self):
+    def midRightReleaseEvent(self):
         print("mid-right release")
-        self.send_event("arrow-key:mid-right action:release")
+        self.sendEvent("arrow-key:mid-right action:release")
         pass
-    def down_left_release_event(self):
+    def downLeftReleaseEvent(self):
         pass
-    def down_release_event(self):
+    def downReleaseEvent(self):
         print("down release")
-        self.send_event("arrow-key:down action:release")
+        self.sendEvent("arrow-key:down action:release")
         pass
-    def down_right_release_event(self):
+    def downRightReleaseEvent(self):
+        print("send fake close")
+        self.sendEvent("close")
         pass
-
 
 
 
