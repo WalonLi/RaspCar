@@ -18,13 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import socket
 import time
-#from Motor import Motor
+from Motor import Motor
 
 
 class RaspCar():
     def __init__(self):
-        #self.motor = Motor()
-        #self.motor.turnRight()
+        self._motor = Motor()
+        #self._motor.turnRight()
 
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.bind(('', 50007))
@@ -58,11 +58,23 @@ class RaspCar():
     def _parseData(self, data):
         func = data.split(" ")
         if len(func) < 2:
-            return False
+            return
 
         key = func[0].split(":")
         act = func[1].split(":")
-        print(key, act)
+        if key[0] == "arrow-key" and act[0] == "action" :
+            if act[1] == "press":
+                if key[1] == "up":
+                    self._motor.forward()
+                elif key[1] == "mid-left":
+                    self._motor.turnLeft()
+                elif key[1] == "mid-right":
+                    self._motor.turnRight()
+                elif key[1] == "down":
+                    self._motor.backward()
+            elif act[1] == "release":
+                self._motor.stop()
+        #print(key, act)
 
 
 if __name__ == '__main__' :

@@ -77,14 +77,14 @@ class Motor():
             i.ChangeDutyCycle(100)
 
         self._motoLatch(Motor.forward_byte)
-        time.sleep(5)
+        #time.sleep(5)
 
     def backward(self):
         for i in self._pwm_map:
             i.ChangeDutyCycle(100)
 
         self._motoLatch(Motor.forward_byte ^ 0xff)
-        time.sleep(5)
+        #time.sleep(5)
 
 
     def turnLeft(self):
@@ -94,7 +94,7 @@ class Motor():
         self._pwm_map[3].ChangeDutyCycle(100)
 
         self._motoLatch(Motor.forward_byte)
-        time.sleep(5)
+        #time.sleep(5)
 
     def turnRight(self):
         self._pwm_map[0].ChangeDutyCycle(100)
@@ -103,8 +103,7 @@ class Motor():
         self._pwm_map[3].ChangeDutyCycle(0)
 
         self._motoLatch(Motor.forward_byte)
-        time.sleep(2)
-        pass
+        #time.sleep(2)
 
 
     # inner function, don't call it directly
