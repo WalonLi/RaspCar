@@ -51,10 +51,10 @@ class Motor():
         GPIO.output(self._gpio_map["PWM4"], GPIO.HIGH)
 
         # set PWM
-        p1 = GPIO.PWM(self._gpio_map["PWM1"], 250)
-        p2 = GPIO.PWM(self._gpio_map["PWM2"], 250)
-        p3 = GPIO.PWM(self._gpio_map["PWM3"], 250)
-        p4 = GPIO.PWM(self._gpio_map["PWM4"], 250)
+        p1 = GPIO.PWM(self._gpio_map["PWM1"], 1000)
+        p2 = GPIO.PWM(self._gpio_map["PWM2"], 1000)
+        p3 = GPIO.PWM(self._gpio_map["PWM3"], 1000)
+        p4 = GPIO.PWM(self._gpio_map["PWM4"], 1000)
         self._pwm_map = [p1, p2, p3, p4]
         for i in self._pwm_map:
             i.start(0)

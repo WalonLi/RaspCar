@@ -24,7 +24,6 @@ from Motor import Motor
 class RaspCar():
     def __init__(self):
         self._motor = Motor()
-        #self._motor.turnRight()
 
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.bind(('', 50007))
@@ -35,6 +34,7 @@ class RaspCar():
         self._socket.close()
 
     def start(self):
+        print("start...")
         while True:
             conn, addr = self._socket.accept()
             print("Connected by", addr)
@@ -42,14 +42,17 @@ class RaspCar():
                 try:
                     # receive data
                     data = conn.recv(1024)
-
+                    data = data.decode("utf-8")
                     # force quit...
                     if data == "close":
+                        conn.close()
+                        self._socket.close()
                         return True
 
                     self._parseData(data)
+
                     #send feedback
-                    conn.send("good")
+                    conn.send(bytes("good", "utf8"))
                 except:
                     print("close socket")
                     break
@@ -80,4 +83,4 @@ class RaspCar():
 if __name__ == '__main__' :
     car = RaspCar()
     car.start()
-    print("hello")
+    print("car stop")

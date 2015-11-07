@@ -83,7 +83,7 @@ class LoginWindow(QWidget):
         self._btn.clicked.connect(self._connectPi)
 
         # ip text editor
-        self._ipText = QTextEdit("localhost")
+        self._ipText = QTextEdit("192.168.0.10")
         self._ipText.setFixedSize(140, 30)
 
         self._layout = QHBoxLayout()

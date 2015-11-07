@@ -36,7 +36,14 @@ class ClientSocket():
     def sendAction(self, data):
         try:
             self.tcpSocket.send(bytes(data, "utf8"))
+
+            # force close
+            if data == "close" :
+                return True
+
             rev_data = self.recv()
+            while rev_data != b'good':
+                rev_data = self.recv()
             print(rev_data)
             return True
         except:
