@@ -1,5 +1,24 @@
 # RaspCar
 
+```
+mjpg_streamer command...
+$ ./mjpg_streamer -i “./input_uvc.so -y -f 30 -r 1024×768” -o “./output_http.so -w ./www”
+
+input
+-d  specify device
+-r  resolution
+-f  fps
+-y  YUYV format
+-q  quality
+-l  led blink or not
+
+output
+-w  streamer page
+-p  port
+-c  account manager
+-n  option command...?
+```
+
 
 ```
 GNU GENERAL PUBLIC LICENSE
