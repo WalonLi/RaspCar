@@ -1,3 +1,4 @@
+#-*- coding: UTF-8 -*-
 #!/usr/bin/python3
 
 """
@@ -27,7 +28,8 @@ from ClientSocket import ClientSocket
 from PyQt5.uic import loadUi
 from PyQt5.QtGui  import *
 from PyQt5.QtCore import *
-
+import numpy as np
+import cv2
 
 import time, threading
 
@@ -314,14 +316,35 @@ class ControlWindow(QWidget):
 
 if __name__ == '__main__' :
     app = QApplication(sys.argv)
-
+    """
     login = LoginWindow()
     control = ControlWindow()
 
     login.show()
+    """
     #control.show()
 
     # login.close()
-    # app.exec_()
+    #app.exec_()
+    cap = cv2.VideoCapture(0)
 
-    sys.exit(app.exec_())
+    while(True):
+        # Capture frame-by-frame
+        ret, frame = cap.read()
+
+        # Our operations on the frame come here
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # Display the resulting frame
+        cv2.imshow('frame', frame)
+        #cv2.imshow('frame',gray)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # When everything done, release the capture
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+
+    #sys.exit(app.exec_())

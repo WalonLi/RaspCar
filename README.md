@@ -1,8 +1,10 @@
 # RaspCar
 
 ```
+Backup...
+
 mjpg_streamer command...
-$ ./mjpg_streamer -i “./input_uvc.so -y -f 30 -r 1024×768” -o “./output_http.so -w ./www”
+$ ./mjpg_streamer -i "./input_uvc.so -y -f 30 -r 1024x768" -o "./output_http.so -w ./www"
 
 input
 -d  specify device
@@ -17,6 +19,12 @@ output
 -p  port
 -c  account manager
 -n  option command...?
+
+Reference website
+http://www.pyimagesearch.com/2015/07/20/install-opencv-3-0-and-python-3-4-on-ubuntu/
+
+Env
+PYTHONPATH:/usr/local/lib/python3.4/site-packages
 ```
 
 
