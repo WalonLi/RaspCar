@@ -22,6 +22,8 @@ output
 
 Reference website
 http://www.pyimagesearch.com/2015/07/20/install-opencv-3-0-and-python-3-4-on-ubuntu/
+http://www.ntex.tw/wordpress/545.html/
+http://blog.csdn.net/harryching/article/details/27311947
 
 Env
 PYTHONPATH:/usr/local/lib/python3.4/site-packages

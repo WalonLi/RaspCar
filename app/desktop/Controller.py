@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
-
+import urllib
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTextEdit, QHBoxLayout
 from PyQt5.QtWidgets import QOpenGLWidget, QAction, QShortcut, QGridLayout
 import socket
@@ -326,7 +326,9 @@ if __name__ == '__main__' :
 
     # login.close()
     #app.exec_()
-    cap = cv2.VideoCapture(0)
+    #cap = cv2.VideoCapture(0)
+    # powerful open cv...
+    cap = cv2.VideoCapture("http://192.168.0.100:8080/?action=stream?dummy=param.mjpg")
 
     while(True):
         # Capture frame-by-frame
