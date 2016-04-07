@@ -12,6 +12,6 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-scp walon@192.168.0.100:~/Project/RaspCar/pi/*.py .
+scp walon@192.168.1.102:~/Project/RaspCar/pi/*.py .
 
 python3 Host.py

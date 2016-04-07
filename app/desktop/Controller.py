@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import urllib
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTextEdit, QHBoxLayout
-from PyQt5.QtWidgets import QOpenGLWidget, QAction, QShortcut, QGridLayout
+from PyQt5.QtWidgets import QOpenGLWidget, QAction, QShortcut, QGridLayout, QDialog
 import socket
 from ClientSocket import ClientSocket
 from PyQt5.uic import loadUi
@@ -269,7 +269,7 @@ class ControlWindow(QWidget):
         pass
     def midPressEvent(self):
         pass
-    def midRightRressEvent(self):
+    def midRightPressEvent(self):
         print("mid-right press")
         self.sendEvent("arrow-key:mid-right action:press")
         pass
@@ -314,6 +314,45 @@ class ControlWindow(QWidget):
 
 
 
+
+class MyDialog(QDialog):
+    def __init__(self, parent=None):
+        super(MyDialog, self).__init__(parent)
+
+        #self.cvImage = cv2.imread(r'cat.jpg')
+
+        self.cap = cv2.VideoCapture("http://192.168.1.10:8080/?action=stream?dummy=param.mjpg")
+        #ret, self.cvImage = self.cap.read()
+
+        #self.height, self.width, self.byteValue = self.cvImage.shape
+        #self.byteValue = self.byteValue * self.width
+
+        #cv2.cvtColor(self.cvImage, cv2.COLOR_BGR2RGB, self.cvImage)
+        #cv2.cvtColor(self.cvImage, cv2.COLOR_BGR2GRAY)
+        #self.mQImage = QImage(self.cvImage, self.width, self.height, self.byteValue, QImage.Format_RGB888)
+
+
+    def paintEvent(self, QPaintEvent):
+        ret, cvImage = self.cap.read()
+        height, width, byteValue = cvImage.shape
+        cvImage = cv2.cvtColor(cvImage, cv2.COLOR_BGR2RGB)
+
+        byteValue = byteValue * width
+        mQImage = QImage(cvImage, width, height, byteValue, QImage.Format_RGB888)
+
+        painter = QPainter()
+        painter.begin(self)
+        painter.drawImage(0, 0, mQImage)
+        painter.end()
+
+    def keyPressEvent(self, QKeyEvent):
+        super(MyDialog, self).keyPressEvent(QKeyEvent)
+        if 's' == QKeyEvent.text():
+            self.repaint()
+        else:
+            app.exit(1)
+
+
 if __name__ == '__main__' :
     app = QApplication(sys.argv)
     """
@@ -328,14 +367,19 @@ if __name__ == '__main__' :
     #app.exec_()
     #cap = cv2.VideoCapture(0)
     # powerful open cv...
-    cap = cv2.VideoCapture("http://192.168.0.100:8080/?action=stream?dummy=param.mjpg")
+    #cap = cv2.VideoCapture("http://192.168.1.10:8080/?action=stream?dummy=param.mjpg")
 
-    while(True):
+    w = MyDialog()
+    w.resize(600, 400)
+    w.show()
+    app.exec_()
+"""
+    while True :
         # Capture frame-by-frame
         ret, frame = cap.read()
 
         # Our operations on the frame come here
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # Display the resulting frame
         cv2.imshow('frame', frame)
@@ -343,9 +387,16 @@ if __name__ == '__main__' :
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+        w = MyDialog()
+        w.resize(600, 400)
+        w.show()
+
+"""
+
+
     # When everything done, release the capture
-    cap.release()
-    cv2.destroyAllWindows()
+    #cap.release()
+    #cv2.destroyAllWindows()
 
 
 
