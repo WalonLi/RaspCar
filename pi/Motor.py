@@ -1,35 +1,31 @@
 #!/usr/bin/python3
 
 """
-GNU GENERAL PUBLIC LICENSE
-Copyright (C) 2015  WalonLi
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+author : Walon Li
+"""
+
+"""
+3           2
+    car
+1           4
 """
 
 import RPi.GPIO as GPIO
 import time
 
 class Motor():
-    motor_1a = 0b10
-    motor_1b = 0b11
-    motor_2a = 0b1
-    motor_2b = 0b100
-    motor_3a = 0b101
-    motor_3b = 0b111
-    motor_4a = 0b0
-    motor_4b = 0b110
 
-    forward_byte = 0x2b
+    motor_1a = 3
+    motor_1b = 6
+    motor_2a = 1
+    motor_2b = 7
+    motor_3a = 5
+    motor_3b = 4
+    motor_4a = 0
+    motor_4b = 2
 
+    forward_byte    = 0x2b
+    left_byte       = 0x53
 
     def __init__(self):
 
@@ -51,10 +47,10 @@ class Motor():
         #GPIO.output(self._gpio_map["PWM4"], GPIO.HIGH)
 
         # set PWM
-        p1 = GPIO.PWM(self._gpio_map["PWM1"], 250)
-        p2 = GPIO.PWM(self._gpio_map["PWM2"], 250)
-        p3 = GPIO.PWM(self._gpio_map["PWM3"], 250)
-        p4 = GPIO.PWM(self._gpio_map["PWM4"], 250)
+        p1 = GPIO.PWM(self._gpio_map["PWM1"], 255)
+        p2 = GPIO.PWM(self._gpio_map["PWM2"], 255)
+        p3 = GPIO.PWM(self._gpio_map["PWM3"], 255)
+        p4 = GPIO.PWM(self._gpio_map["PWM4"], 255)
         self._pwm_map = [p1, p2, p3, p4]
         for i in self._pwm_map:
             i.start(100)
@@ -88,21 +84,17 @@ class Motor():
 
 
     def turnLeft(self):
-        self._pwm_map[0].ChangeDutyCycle(0)
-        self._pwm_map[1].ChangeDutyCycle(0)
-        self._pwm_map[2].ChangeDutyCycle(100)
-        self._pwm_map[3].ChangeDutyCycle(100)
+        for i in self._pwm_map:
+            i.ChangeDutyCycle(100)
 
-        self._motoLatch(Motor.forward_byte)
+        self._motoLatch(Motor.left_byte)
         #time.sleep(5)
 
     def turnRight(self):
-        self._pwm_map[0].ChangeDutyCycle(100)
-        self._pwm_map[1].ChangeDutyCycle(100)
-        self._pwm_map[2].ChangeDutyCycle(0)
-        self._pwm_map[3].ChangeDutyCycle(0)
+        for i in self._pwm_map:
+            i.ChangeDutyCycle(100)
 
-        self._motoLatch(Motor.forward_byte)
+        self._motoLatch(Motor.left_byte ^ 0xff)
         #time.sleep(2)
 
 

@@ -2,21 +2,7 @@
 #!/usr/bin/python3
 
 """
-GNU GENERAL PUBLIC LICENSE
-Copyright (C) 2015  WalonLi
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+author : Walon Li
 """
 
 import sys
@@ -85,7 +71,7 @@ class LoginWindow(QWidget):
         self._btn.clicked.connect(self._connectPi)
 
         # ip text editor
-        self._ipText = QTextEdit("192.168.0.10")
+        self._ipText = QTextEdit("192.168.1.110")
         self._ipText.setFixedSize(140, 30)
 
         self._layout = QHBoxLayout()
@@ -119,13 +105,56 @@ class LoginWindow(QWidget):
 
 
 
+class WebCamView(QWidget):
+    def __init__(self, parent=None):
+        super(WebCamView, self).__init__(parent)
+
+        #self.cvImage = cv2.imread(r'cat.jpg')
+        #self.resize(600, 400)
+        self.cap = cv2.VideoCapture("http://192.168.1.110:8080/?action=stream?dummy=param.mjpg")
+        self.startTimer(100)
+
+        #ret, self.cvImage = self.cap.read()
+
+        #self.height, self.width, self.byteValue = self.cvImage.shape
+        #self.byteValue = self.byteValue * self.width
+
+        #cv2.cvtColor(self.cvImage, cv2.COLOR_BGR2RGB, self.cvImage)
+        #cv2.cvtColor(self.cvImage, cv2.COLOR_BGR2GRAY)
+        #self.mQImage = QImage(self.cvImage, self.width, self.height, self.byteValue, QImage.Format_RGB888)
+
+    def timerEvent(self, QTimerEvent):
+        self.repaint()
+
+    def paintEvent(self, QPaintEvent):
+        ret, cvImage = self.cap.read()
+        height, width, byteValue = cvImage.shape
+        cvImage = cv2.cvtColor(cvImage, cv2.COLOR_BGR2RGB)
+
+        byteValue = byteValue * width
+        mQImage = QImage(cvImage, width, height, byteValue, QImage.Format_RGB888)
+
+        painter = QPainter()
+        painter.begin(self)
+        painter.drawImage(0, 0, mQImage)
+        painter.end()
+
+    #def keyPressEvent(self, QKeyEvent):
+    #    app.exit(1)
+        #super(MyDialog, self).keyPressEvent(QKeyEvent)
+        #if 's' == QKeyEvent.text():
+        #else:
+
+
+
 class ControlWindow(QWidget):
 
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__(None)
 
         self._host = ""
         self._port = 0
+        self._cam  = WebCamView(self)
 
         self._up_left   = QPushButton("↖", self)
         self._up        = QPushButton("↑", self)
@@ -142,7 +171,7 @@ class ControlWindow(QWidget):
                    self._mid_left, self._mid, self._mid_right,
                    self._down_left, self._down, self._down_right]
         press_event = [self.upLeftPressEvent, self.upPressEvent, self.upRightPressEvent,
-                       self.midLefPressEvent, self.midPressEvent, self.midRightRressEvent,
+                       self.midLefPressEvent, self.midPressEvent, self.midRightPressEvent,
                        self.downLeftPressEvent, self.downPressEvent, self.downRightPressEvent]
         release_event = [self.upLeftReleaseEvent, self.upReleaseEvent, self.upRightReleaseEvent,
                          self.midLeftReleaseEvent, self.midReleaseEvent, self.midRightReleaseEvent,
@@ -172,10 +201,11 @@ class ControlWindow(QWidget):
         #self._up_left.addAction()
         #self._up.clicked.connect(self.send_event)
 
-        self._graphic = QOpenGLWidget(self)
-        self._graphic.setFixedSize(QSize(500, 400))
-        self._graphic.move(QPoint(10, 10))
-
+        #self._graphic = QOpenGLWidget(self)
+        #self._graphic.setFixedSize(QSize(500, 400))
+        #self._graphic.move(QPoint(10, 10))
+        self._cam.setFixedSize(QSize(500, 400))
+        self._cam.move(QPoint(10, 10))
 
         #self._layout = QGridLayout(self)
         #self._layout.addWidget(self._up)
@@ -315,52 +345,17 @@ class ControlWindow(QWidget):
 
 
 
-class MyDialog(QDialog):
-    def __init__(self, parent=None):
-        super(MyDialog, self).__init__(parent)
 
-        #self.cvImage = cv2.imread(r'cat.jpg')
-
-        self.cap = cv2.VideoCapture("http://192.168.1.10:8080/?action=stream?dummy=param.mjpg")
-        #ret, self.cvImage = self.cap.read()
-
-        #self.height, self.width, self.byteValue = self.cvImage.shape
-        #self.byteValue = self.byteValue * self.width
-
-        #cv2.cvtColor(self.cvImage, cv2.COLOR_BGR2RGB, self.cvImage)
-        #cv2.cvtColor(self.cvImage, cv2.COLOR_BGR2GRAY)
-        #self.mQImage = QImage(self.cvImage, self.width, self.height, self.byteValue, QImage.Format_RGB888)
-
-
-    def paintEvent(self, QPaintEvent):
-        ret, cvImage = self.cap.read()
-        height, width, byteValue = cvImage.shape
-        cvImage = cv2.cvtColor(cvImage, cv2.COLOR_BGR2RGB)
-
-        byteValue = byteValue * width
-        mQImage = QImage(cvImage, width, height, byteValue, QImage.Format_RGB888)
-
-        painter = QPainter()
-        painter.begin(self)
-        painter.drawImage(0, 0, mQImage)
-        painter.end()
-
-    def keyPressEvent(self, QKeyEvent):
-        super(MyDialog, self).keyPressEvent(QKeyEvent)
-        if 's' == QKeyEvent.text():
-            self.repaint()
-        else:
-            app.exit(1)
 
 
 if __name__ == '__main__' :
     app = QApplication(sys.argv)
-    """
+
     login = LoginWindow()
     control = ControlWindow()
 
     login.show()
-    """
+
     #control.show()
 
     # login.close()
@@ -369,35 +364,8 @@ if __name__ == '__main__' :
     # powerful open cv...
     #cap = cv2.VideoCapture("http://192.168.1.10:8080/?action=stream?dummy=param.mjpg")
 
-    w = MyDialog()
-    w.resize(600, 400)
-    w.show()
+    #w = MyDialog()
+    #w.resize(600, 400)
+    #w.show()
     app.exec_()
-"""
-    while True :
-        # Capture frame-by-frame
-        ret, frame = cap.read()
 
-        # Our operations on the frame come here
-        #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        # Display the resulting frame
-        cv2.imshow('frame', frame)
-        #cv2.imshow('frame',gray)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-        w = MyDialog()
-        w.resize(600, 400)
-        w.show()
-
-"""
-
-
-    # When everything done, release the capture
-    #cap.release()
-    #cv2.destroyAllWindows()
-
-
-
-    #sys.exit(app.exec_())
